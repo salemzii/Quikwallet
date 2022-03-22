@@ -51,6 +51,10 @@ func (w *Wallet) WalletNotBelowZero() bool {
 	return w.Balance.IsNegative()
 }
 
+type TransactionForm struct {
+	Amount decimal.Decimal
+}
+
 // function for creating a player
 func CreatePlayer(c *gin.Context) {
 	var player Player

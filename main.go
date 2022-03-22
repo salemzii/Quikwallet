@@ -113,7 +113,7 @@ func creditWallet(c *gin.Context) {
 	}
 	// declare two instances of wallet, one for query db, the other for recieving credit amount
 	var wallet entity.Wallet
-	var wallet2 entity.Wallet
+	var creditamount entity.TransactionForm
 
 	//Query db for a particular wallet using it's wallet id
 	db.Transaction(func(tx *gorm.DB) error {
@@ -124,13 +124,13 @@ func creditWallet(c *gin.Context) {
 
 		} else {
 			// parse json data into wallet instance
-			c.BindJSON(&wallet2)
+			c.BindJSON(&creditamount)
 
 			//Check if amount to be credited is a positive number
-			if wallet2.Balance.IsPositive() {
+			if creditamount.Amount.IsPositive() {
 
 				// update db balance with the new credit amount
-				tx.Model(&wallet).Update("balance", wallet.Balance.Add(wallet2.Balance))
+				tx.Model(&wallet).Update("balance", wallet.Balance.Add(creditamount.Amount))
 
 				//update cache to set balance for that key to it's new value
 				if err := cache.SetWalletBalanceInCache(wallet_id, wallet.Balance); err != nil {
@@ -142,7 +142,7 @@ func creditWallet(c *gin.Context) {
 			} else {
 				//return status 400 if amount to be credited is negative.
 				c.JSON(400, gin.H{
-					"error": "Cannot use negative value " + wallet2.Balance.String() + " for operation",
+					"error": "Cannot use negative value " + creditamount.Amount.String() + " for operation",
 				})
 			}
 		}
@@ -160,7 +160,7 @@ func debitWallet(c *gin.Context) {
 	}
 	// declare two instances of wallet, one for query db, the other for recieving dedit amount
 	var wallet entity.Wallet
-	var wallet2 entity.Wallet
+	var debitamount entity.TransactionForm
 	//Query db for a particular wallet using it's wallet id
 	db.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Where("id = ?", wallet_id).First(&wallet).Error; err != nil {
@@ -169,13 +169,13 @@ func debitWallet(c *gin.Context) {
 			})
 		} else {
 			// parse json data into wallet instance
-			c.BindJSON(&wallet2)
+			c.BindJSON(&debitamount)
 
 			//Check if amount to be dedited is a positive number
-			if wallet2.Balance.IsPositive() {
-				if !(wallet2.Balance.GreaterThan(wallet.Balance)) && !(wallet.WalletNotBelowZero()) {
+			if debitamount.Amount.IsPositive() {
+				if !(debitamount.Amount.GreaterThan(wallet.Balance)) && !(wallet.WalletNotBelowZero()) {
 					// update db balance with the new dedit amount
-					tx.Model(&wallet).Update("balance", wallet.Balance.Sub(wallet2.Balance))
+					tx.Model(&wallet).Update("balance", wallet.Balance.Sub(debitamount.Amount))
 
 					//update cache to set balance for that key to it's new value
 					if err := cache.SetWalletBalanceInCache(wallet_id, wallet.Balance); err != nil {
@@ -193,7 +193,7 @@ func debitWallet(c *gin.Context) {
 			} else {
 				//return status 400 if amount to be dedited is negative.
 				c.JSON(400, gin.H{
-					"error": "Cannot use negative value " + wallet2.Balance.String() + " for operation",
+					"error": "Cannot use negative value " + debitamount.Amount.String() + " for operation",
 				})
 			}
 		}
