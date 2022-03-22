@@ -74,19 +74,4 @@ func LoginFunc(c *gin.Context) {
 
 }
 
-func Logout(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(userkey)
-	if user == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
-		return
-	}
-	session.Delete(userkey)
-	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
-}
-
 //https://medium.com/wesionary-team/jwt-authentication-in-golang-with-gin-63dbc0816d55#:~:text=JSON%20Web%20Token%20(JWT)%20technology,token%20once%20it%20is%20sent.
