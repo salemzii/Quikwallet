@@ -57,6 +57,7 @@ func main() {
 func JSONMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "application/json")
+		c.Writer.Header().Set("Accept", "application/json")
 		c.Next()
 	}
 }
@@ -141,7 +142,6 @@ func creditWallet(c *gin.Context) {
 		} else {
 			// parse json data into wallet instance
 			c.ShouldBindJSON(&creditamount)
-			fmt.Println(creditamount)
 			//Check if amount to be credited is a positive number
 			if creditamount.Amount.IsPositive() {
 

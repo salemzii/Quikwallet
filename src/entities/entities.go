@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/go-playground/validator.v9"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -51,8 +52,19 @@ func (w *Wallet) WalletNotBelowZero() bool {
 	return w.Balance.IsNegative()
 }
 
+var validate *validator.Validate
+
 type TransactionForm struct {
 	Amount decimal.Decimal `json:"amount"`
+}
+
+func ValidateStruct(form TransactionForm) error {
+	validate = validator.New()
+	err := validate.Struct(form)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // function for creating a player
