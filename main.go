@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -139,8 +140,8 @@ func creditWallet(c *gin.Context) {
 
 		} else {
 			// parse json data into wallet instance
-			c.BindJSON(&creditamount)
-
+			c.ShouldBindJSON(&creditamount)
+			fmt.Println(creditamount)
 			//Check if amount to be credited is a positive number
 			if creditamount.Amount.IsPositive() {
 
@@ -184,8 +185,8 @@ func debitWallet(c *gin.Context) {
 			})
 		} else {
 			// parse json data into wallet instance
-			c.BindJSON(&debitamount)
-
+			c.ShouldBindJSON(&debitamount)
+			fmt.Println(debitamount)
 			//Check if amount to be dedited is a positive number
 			if debitamount.Amount.IsPositive() {
 				if !(debitamount.Amount.GreaterThan(wallet.Balance)) && !(wallet.WalletNotBelowZero()) {

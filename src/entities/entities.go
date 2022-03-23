@@ -43,7 +43,7 @@ func (p *Player) CheckPasswordHash(password, hash string) bool {
 type Wallet struct {
 	gorm.Model
 	//Player      Player          `json:"player"`
-	Balance     decimal.Decimal `json:"balance`
+	Balance     decimal.Decimal `json:"balance"`
 	LastUpdated time.Time       `json:"lastupdated"`
 }
 
