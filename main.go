@@ -142,28 +142,35 @@ func creditWallet(c *gin.Context) {
 		} else {
 			// parse json data into wallet instance
 			c.ShouldBindJSON(&creditamount)
-			//Check if amount to be credited is a positive number
-			if creditamount.Amount.IsPositive() {
+			if entity.ValidateStruct(creditamount) == nil {
+				//Check if amount to be credited is a positive number
+				if creditamount.Amount.IsPositive() {
 
-				// update db balance with the new credit amount
-				tx.Model(&wallet).Update("balance", wallet.Balance.Add(creditamount.Amount))
+					// update db balance with the new credit amount
+					tx.Model(&wallet).Update("balance", wallet.Balance.Add(creditamount.Amount))
 
-				//update cache to set balance for that key to it's new value
-				if err := cache.SetWalletBalanceInCache(wallet_id, wallet.Balance); err != nil {
-					log.Println("unable to set value \n", err)
+					//update cache to set balance for that key to it's new value
+					if err := cache.SetWalletBalanceInCache(wallet_id, wallet.Balance); err != nil {
+						log.Println("unable to set value \n", err)
+					}
+					c.JSON(200, gin.H{
+						"balance": wallet.Balance,
+					})
+				} else {
+					//return status 400 if amount to be credited is negative.
+					c.JSON(400, gin.H{
+						"error": "Cannot use negative value " + creditamount.Amount.String() + " for operation",
+					})
 				}
-				c.JSON(200, gin.H{
-					"balance": wallet.Balance,
-				})
 			} else {
-				//return status 400 if amount to be credited is negative.
 				c.JSON(400, gin.H{
-					"error": "Cannot use negative value " + creditamount.Amount.String() + " for operation",
+					"error": err,
 				})
 			}
 		}
 		return nil
 	})
+
 }
 
 //function to credit a wallet
