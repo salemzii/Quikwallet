@@ -134,8 +134,6 @@ func getWalletBalance(c *gin.Context) {
 	})
 }
 
-//go build -o bin/quikwallet -v .
-
 //function to credit a wallet
 func creditWallet(c *gin.Context) {
 	// get wallet id from url parameter

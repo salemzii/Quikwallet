@@ -1,0 +1,2 @@
+HopeCenter:auth1234@tcp(HopeCenter.mysql.pythonanywhere-services.com)/quikwallet
+//go build -o bin/quikwallet -v .

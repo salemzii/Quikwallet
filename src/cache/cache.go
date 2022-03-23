@@ -2,6 +2,7 @@ package cache
 
 import (
 	"context"
+	"os"
 	"strconv"
 	"time"
 
@@ -16,8 +17,8 @@ var mycache *cache.Cache
 func init() {
 	rdb := redis.NewClient(&redis.Options{
 		//Addr: "localhost:6379",
-		Addr:     "redis-15719.c242.eu-west-1-2.ec2.cloud.redislabs.com:15719",
-		Password: "38rKjb8yOD7YI2OodiAoFdrMZQTIBIYl",
+		Addr:     os.Getenv("REDIS_ADDR"),
+		Password: os.Getenv("REDIS_PASSWORD"),
 	})
 	mycache = cache.New(&cache.Options{
 		Redis: rdb,
