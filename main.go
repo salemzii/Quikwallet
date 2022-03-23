@@ -20,16 +20,29 @@ var err error
 
 func init() {
 	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
-
 	if err != nil {
 		log.Fatal(err)
 	}
+	/*
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			DriverName: "mysql",
+			DSN:        "",
+		}), &gorm.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
 	db.AutoMigrate(&entity.Player{})
 	db.AutoMigrate(&entity.Wallet{})
 }
 
 func main() {
 
+	setupServer().Run()
+}
+
+// The engine with all endpoints is now extracted from the main function
+func setupServer() *gin.Engine {
 	//create http router
 	router := gin.Default()
 
@@ -52,8 +65,9 @@ func main() {
 		router.POST("/api/v1/wallets/create", createWallet)
 	}
 
-	router.Run()
+	return router
 }
+
 func JSONMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "application/json")
@@ -119,6 +133,8 @@ func getWalletBalance(c *gin.Context) {
 		return nil
 	})
 }
+
+//go build -o bin/quikwallet -v .
 
 //function to credit a wallet
 func creditWallet(c *gin.Context) {

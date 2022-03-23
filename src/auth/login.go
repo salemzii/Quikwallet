@@ -59,7 +59,8 @@ func LoginFunc(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	if logindetails.Name != player.Username || !player.CheckPasswordHash(logindetails.Password, pass) {
+	fmt.Println(pass)
+	if logindetails.Name != player.Username || !player.CheckPasswordHash(logindetails.Password, player.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
 		return
 	}
