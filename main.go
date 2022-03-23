@@ -33,7 +33,7 @@ func main() {
 	router := gin.Default()
 
 	router.Use(sessions.Sessions("mysession", sessions.NewCookieStore(auth.Secret)))
-
+	router.Use(JSONMiddleware())
 	router.GET("/", welcome)
 
 	//Authentication
@@ -53,10 +53,24 @@ func main() {
 
 	router.Run()
 }
+func JSONMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.Next()
+	}
+}
 
 func welcome(c *gin.Context) {
+
 	c.JSON(200, gin.H{
-		"message": "welcome",
+		"message":       "Hello welcome to QuikWallet api",
+		"register":      "/api/v1/auth/register",
+		"login":         "/api/v1/auth/login",
+		"balance":       "private/api/v1/wallets/wallet_id/balance",
+		"credit":        "private/api/v1/wallets/:wallet_id/credit",
+		"debit":         "private/api/v1/wallets/:wallet_id/debit",
+		"create_wallet": "private/api/v1/wallets/create",
+		"logout":        "/api/v1/auth/logout",
 	})
 }
 
@@ -75,8 +89,8 @@ func getWalletBalance(c *gin.Context) {
 		log.Println(err)
 	} else {
 		c.JSON(200, gin.H{
-			"balance": w.Balance,
-			"cache":   true,
+			"balance":    w.Balance,
+			"from_cache": true,
 		})
 		return
 	}
@@ -96,7 +110,8 @@ func getWalletBalance(c *gin.Context) {
 			}
 			// return json response with wallet balance
 			c.JSON(200, gin.H{
-				"balance": wallet.Balance,
+				"balance":    wallet.Balance,
+				"from_cache": false,
 			})
 		}
 		return nil

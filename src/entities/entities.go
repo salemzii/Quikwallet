@@ -52,7 +52,7 @@ func (w *Wallet) WalletNotBelowZero() bool {
 }
 
 type TransactionForm struct {
-	Amount decimal.Decimal
+	Amount decimal.Decimal `json:"amount"`
 }
 
 // function for creating a player
