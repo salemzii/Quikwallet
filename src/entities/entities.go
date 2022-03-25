@@ -16,12 +16,6 @@ import (
 var db *gorm.DB
 var err error
 
-func init() {
-	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type Player struct {
 	gorm.Model
@@ -38,7 +32,6 @@ func (player *Player) AfterCreate(tx *gorm.DB) (err error) {
 	if err := tx.Create(&w).Error; err != nil {
 		return err
 	}
-	fmt.Println("Auto-creating wallet...../")
 
 	return nil
 }
@@ -70,6 +63,24 @@ var validate *validator.Validate
 
 type TransactionForm struct {
 	Amount decimal.Decimal `json:"amount"`
+}
+
+func init() {
+	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			DriverName: "mysql",
+			DSN:        "",
+		}), &gorm.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+	db.AutoMigrate(&entity.Player{})
+	db.AutoMigrate(&entity.Wallet{})
 }
 
 func ValidateStruct(form TransactionForm) error {
