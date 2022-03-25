@@ -17,7 +17,23 @@ import (
 
 var db *gorm.DB
 var err error
-
+func init() {
+	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			DriverName: "mysql",
+			DSN:        "",
+		}), &gorm.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+	db.AutoMigrate(&entity.Player{})
+	db.AutoMigrate(&entity.Wallet{})
+}
 
 
 func main() {
@@ -52,23 +68,7 @@ func setupServer() *gin.Engine {
 	return router
 }
 
-func init() {
-	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	/*
-		db, err := gorm.Open(mysql.New(mysql.Config{
-			DriverName: "mysql",
-			DSN:        "",
-		}), &gorm.Config{})
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-	db.AutoMigrate(&entity.Player{})
-	db.AutoMigrate(&entity.Wallet{})
-}
+
 
 func JSONMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
