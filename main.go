@@ -15,27 +15,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-var err error
-func init() {
-	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	/*
-		db, err := gorm.Open(mysql.New(mysql.Config{
-			DriverName: "mysql",
-			DSN:        "",
-		}), &gorm.Config{})
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-	db.AutoMigrate(&entity.Player{})
-	db.AutoMigrate(&entity.Wallet{})
-}
-
-
 func main() {
 
 	setupServer().Run()
@@ -68,14 +47,33 @@ func setupServer() *gin.Engine {
 	return router
 }
 
-
-
 func JSONMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Content-Type", "application/json")
 		c.Writer.Header().Set("Accept", "application/json")
 		c.Next()
 	}
+}
+
+var db *gorm.DB
+var err error
+
+func init() {
+	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			DriverName: "mysql",
+			DSN:        "",
+		}), &gorm.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+	db.AutoMigrate(&entity.Player{})
+	db.AutoMigrate(&entity.Wallet{})
 }
 
 func welcome(c *gin.Context) {

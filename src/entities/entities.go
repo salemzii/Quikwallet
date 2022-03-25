@@ -13,26 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-var err error
-func init() {
-	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	/*
-		db, err := gorm.Open(mysql.New(mysql.Config{
-			DriverName: "mysql",
-			DSN:        "",
-		}), &gorm.Config{})
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-	db.AutoMigrate(&entity.Player{})
-	db.AutoMigrate(&entity.Wallet{})
-}
-
 type Player struct {
 	gorm.Model
 	Username string `json:"name"`
@@ -81,8 +61,6 @@ type TransactionForm struct {
 	Amount decimal.Decimal `json:"amount"`
 }
 
-
-
 func ValidateStruct(form TransactionForm) error {
 	validate = validator.New()
 	err := validate.Struct(form)
@@ -90,6 +68,26 @@ func ValidateStruct(form TransactionForm) error {
 		return err
 	}
 	return nil
+}
+
+var db *gorm.DB
+var err error
+
+func init() {
+	db, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	/*
+		db, err := gorm.Open(mysql.New(mysql.Config{
+			DriverName: "mysql",
+			DSN:        "",
+		}), &gorm.Config{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+
 }
 
 //Get last recorded wallet and returns it's id
