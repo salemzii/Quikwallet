@@ -60,7 +60,7 @@ live project on https://quikwallet.herokuapp.com/
         method = POST
         fields = {"amount":""}
         response = {
-          "balance": decimal.Decimal,
+          "balance": decimal.Decimal
           }
           
    ## . Debit wallet private/api/v1/wallets/:wallet_id/debit
@@ -68,7 +68,7 @@ live project on https://quikwallet.herokuapp.com/
         method = POST
         fields = {"amount":""}
         response = {
-          "balance": decimal.Decimal,
+          "balance": decimal.Decimal
           }
           
    ## . Logout /api/v1/auth/logout
