@@ -8,11 +8,26 @@ live project on https://quikwallet.herokuapp.com/
     method = POST
     fields = {"username":"", "email":"", "password":""} 
     response = {
-      "username": "",
+      		"username": "",
 			"email":    "",
 			"password": "",
+			"your_wallet_id":"",
             }
-        
+ On create of player an AfterCreate hook is included to 
+ automatically create a wallet,
+ ```Go 
+	 func (player *Player) AfterCreate(tx *gorm.DB) (err error) {
+
+		w := Wallet{
+			Balance: decimal.NewFromFloat(0.00),
+		}
+		if err := tx.Create(&w).Error; err != nil {
+			return err
+		}
+
+		return nil
+	}
+ ```
         
         
   ## . Login /api/v1/auth/login
@@ -45,7 +60,7 @@ live project on https://quikwallet.herokuapp.com/
         method = POST
         fields = {"amount":""}
         response = {
-          "balance": decimal.Decimal,
+          "balance": decimal.Decimal
           }
           
    ## . Debit wallet private/api/v1/wallets/:wallet_id/debit
@@ -53,7 +68,7 @@ live project on https://quikwallet.herokuapp.com/
         method = POST
         fields = {"amount":""}
         response = {
-          "balance": decimal.Decimal,
+          "balance": decimal.Decimal
           }
           
    ## . Logout /api/v1/auth/logout
