@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -27,6 +28,19 @@ type Player struct {
 	Username string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+func (player *Player) AfterCreate(tx *gorm.DB) (err error) {
+
+	w := Wallet{
+		Balance: decimal.NewFromFloat(0.00),
+	}
+	if err := tx.Create(&w).Error; err != nil {
+		return err
+	}
+	fmt.Println("Auto-creating wallet...../")
+
+	return nil
 }
 
 //Generates a password hash for a player's password as storing raw password to db is not ideal
@@ -67,6 +81,16 @@ func ValidateStruct(form TransactionForm) error {
 	return nil
 }
 
+//Get last recorded wallet and returns it's id
+func GetWallet() (id int, err error) {
+	var w Wallet
+	db.Last(&w)
+	if w.ID != 0 {
+		return int(w.ID), nil
+	}
+	return 0, err
+}
+
 // function for creating a player
 func CreatePlayer(c *gin.Context) {
 	var player Player
@@ -75,6 +99,11 @@ func CreatePlayer(c *gin.Context) {
 
 	//Db Transaction to create player
 	db.Transaction(func(tx *gorm.DB) error {
+		w, err := GetWallet()
+		if err != nil {
+			log.Println(err)
+		}
+
 		pass, err := player.HashPassword(player.Password)
 		if err != nil {
 			log.Println(err)
@@ -83,11 +112,14 @@ func CreatePlayer(c *gin.Context) {
 		if err := tx.Create(&player).Error; err != nil {
 			return err
 		}
+
+		fmt.Println(w)
 		// Return json response after saving player
 		c.JSON(200, gin.H{
-			"username": player.Username,
-			"email":    player.Email,
-			"password": player.Password,
+			"username":       player.Username,
+			"email":          player.Email,
+			"password":       player.Password,
+			"your_wallet_id": w,
 		})
 		return nil
 	})
