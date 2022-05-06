@@ -1,4 +1,4 @@
-# Backend Developer Task – Wallet API
+# wallet as a service software for developers to seamlessly Integrate into their applications – Wallet API
 
 live project on https://quikwallet.herokuapp.com/
 
